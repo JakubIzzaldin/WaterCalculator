@@ -1,37 +1,26 @@
-import {
-  categoryObject,
-  coffeeConsumptionObject,
-  overweightObject,
-  physicalActivityObject,
-  weatherObject,
-  weightObject,
-} from "../constants/waterCalculator.ts";
+import { Path, RegisterOptions } from "react-hook-form";
 
-export type Category = (typeof categoryObject)[keyof typeof categoryObject];
+export type WaterCalcFormType = Record<string, any>;
 
-export type Overweight =
-  (typeof overweightObject)[keyof typeof overweightObject];
-
-export type PhysicalActivity =
-  (typeof physicalActivityObject)[keyof typeof physicalActivityObject];
-
-export type CoffeeConsumption =
-  (typeof coffeeConsumptionObject)[keyof typeof coffeeConsumptionObject];
-
-export type Weather = (typeof weatherObject)[keyof typeof weatherObject];
-export type Weight = (typeof weightObject)[keyof typeof weightObject];
-
-export type WaterCalculatorFormDefaultValue = {
-  Weather: Weather["value"];
-  CoffeeConsumption: CoffeeConsumption["value"];
-  PhysicalActivity: PhysicalActivity["value"];
-  Overweight: Overweight["value"];
-  Category: Category["value"];
-  Weight: number | undefined;
+type WaterCalcConfigBase<E extends WaterCalcFormType> = {
+  type: "text" | "select";
+  label: string;
+  id: string;
+  values?: Record<string, { value: number | string; label: string }>;
+  defaultValueKey: string;
+  operation: "add" | "multiplyAll" | "multipleWith";
+  rules?: RegisterOptions<E, Path<E>>;
 };
-export type WaterCalculatorKeys = keyof WaterCalculatorFormDefaultValue;
 
-export type WaterCalculatorInputConfig = Record<
-  WaterCalculatorKeys,
-  Record<string, { value: number | string; label: string }>
->;
+type MultiplyWithItem<E extends WaterCalcFormType> = {
+  operation: "multipleWith";
+  multiplyWithKey: string;
+} & WaterCalcConfigBase<E>;
+
+type NonMultiplyWithItem<E extends WaterCalcFormType> = {
+  operation: "add" | "multiplyAll";
+} & WaterCalcConfigBase<E>;
+
+export type WaterCalcConfig<E extends WaterCalcFormType> =
+  | MultiplyWithItem<E>
+  | NonMultiplyWithItem<E>;
